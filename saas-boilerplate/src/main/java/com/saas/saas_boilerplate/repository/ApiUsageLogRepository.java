@@ -14,6 +14,8 @@ public interface ApiUsageLogRepository extends JpaRepository<ApiUsageLog, Long> 
     // Count how many requests a user made in the last minute (for rate limiting)
     @Query("SELECT COUNT(a) FROM ApiUsageLog a WHERE a.user.email = :email AND a.calledAt >= :since")
     long countByUserEmailSince(@Param("email") String email, @Param("since") LocalDateTime since);
+    
+    long countByTenant(Tenant tenant);
 
     // All logs for a tenant (for ADMIN/SUPER_ADMIN usage view)
     List<ApiUsageLog> findByTenantOrderByCalledAtDesc(Tenant tenant);
