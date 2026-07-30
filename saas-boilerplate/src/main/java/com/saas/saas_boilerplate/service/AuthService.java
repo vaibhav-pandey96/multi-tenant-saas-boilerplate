@@ -49,15 +49,15 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword())) // encrypt!
                 .role(User.Role.USER)
-                .verified(false)
-                .verificationToken(verificationToken)
+                .verified(true)
+                .verificationToken(null)
                 .tenant(tenant)
                 .build();
 
         userRepository.save(user);
 
         // Send verification email
-        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+//        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
 
         return AuthResponse.builder()
                 .email(user.getEmail())
