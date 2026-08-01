@@ -35,3 +35,6 @@ jwt:
 
 app:
   name: SaaS Boilerplate
+
+  cors:
+    allowed-origins: http://localhost:5173,https://multi-tenant-saas-boilerplate-ho9k2jzey.vercel.app,https://multi-tenant-saas-boilerplate-neon.vercel.app/
