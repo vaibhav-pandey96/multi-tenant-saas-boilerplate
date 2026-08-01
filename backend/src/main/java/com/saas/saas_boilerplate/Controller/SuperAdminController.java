@@ -7,6 +7,7 @@ import com.saas.saas_boilerplate.repository.TenantRepository;
 import com.saas.saas_boilerplate.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,16 +21,10 @@ public class SuperAdminController {
     private final AdminService adminService;
     private final TenantRepository tenantRepository;
 
-    // Get all tenants
-    @GetMapping("/tenants")
-    public ResponseEntity<List<TenantSummaryResponse>> getAllTenants() {
+    // =====================================================
+    // PUBLIC API
+    // =====================================================
 
-        return ResponseEntity.ok(
-                adminService.getAllTenantsWithUsage()
-        );
-    }
-
-    // Get tenant names
     @GetMapping("/tenant-names")
     public ResponseEntity<List<String>> getAllTenantNames() {
 
@@ -42,7 +37,20 @@ public class SuperAdminController {
         return ResponseEntity.ok(names);
     }
 
-    // Promote user to Tenant Admin
+    // =====================================================
+    // SUPER ADMIN APIs
+    // =====================================================
+
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @GetMapping("/tenants")
+    public ResponseEntity<List<TenantSummaryResponse>> getAllTenants() {
+
+        return ResponseEntity.ok(
+                adminService.getAllTenantsWithUsage()
+        );
+    }
+
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PutMapping("/users/{id}/make-tenant-admin")
     public ResponseEntity<UserProfileResponse> makeTenantAdmin(
             @PathVariable Long id) {
@@ -52,7 +60,7 @@ public class SuperAdminController {
         );
     }
 
-    // Demote Tenant Admin to User
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PutMapping("/users/{id}/make-user")
     public ResponseEntity<UserProfileResponse> makeUser(
             @PathVariable Long id) {
@@ -62,7 +70,7 @@ public class SuperAdminController {
         );
     }
 
-    // Get users of a tenant
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/tenants/{tenantId}/users")
     public ResponseEntity<List<UserProfileResponse>> getUsersOfTenant(
             @PathVariable Long tenantId) {

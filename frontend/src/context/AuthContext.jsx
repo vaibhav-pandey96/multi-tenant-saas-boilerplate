@@ -3,26 +3,45 @@ import { createContext, useContext, useState } from 'react';
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+
   const [user, setUser] = useState(() => {
-    // It Checks if user was already logged in or not
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
   const login = (userData, token) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
+
     setUser(userData);
   };
 
-    const logout = () => {
+  const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+
     setUser(null);
   };
 
+  const isAuthenticated = !!user;
+
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+
+  const isAdmin =
+    user?.role === 'ADMIN' ||
+    user?.role === 'SUPER_ADMIN';
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        isAuthenticated,
+        isAdmin,
+        isSuperAdmin
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
