@@ -25,6 +25,7 @@ public class AdminService {
 
     // Get currently logged-in user
     private User getCurrentUser() {
+
         String email = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -37,6 +38,7 @@ public class AdminService {
 
     // Convert User -> DTO
     private UserProfileResponse toProfileResponse(User user) {
+
         return UserProfileResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -47,9 +49,9 @@ public class AdminService {
                 .build();
     }
 
-    // ===========================
+    // ==================================================
     // TENANT ADMIN METHODS
-    // ===========================
+    // ==================================================
 
     @Transactional
     public List<UserProfileResponse> getUsersInMyTenant() {
@@ -59,6 +61,7 @@ public class AdminService {
 
         return userRepository.findByTenant(myTenant)
                 .stream()
+                .filter(user -> user.getRole() != User.Role.SUPER_ADMIN)
                 .map(this::toProfileResponse)
                 .collect(Collectors.toList());
     }
@@ -77,30 +80,64 @@ public class AdminService {
             throw new RuntimeException("User not in your tenant!");
         }
 
+        if (targetUser.getRole() == User.Role.SUPER_ADMIN) {
+            throw new RuntimeException("Cannot access Super Admin.");
+        }
+
         return toProfileResponse(targetUser);
     }
 
     @Transactional
-    public UserProfileResponse changeUserRoleInMyTenant(
-            Long id,
-            String newRole) {
+    public UserProfileResponse transferAdminRights(Long newAdminId) {
 
-        User currentUser = getCurrentUser();
+        User currentAdmin = getCurrentUser();
 
-        User targetUser = userRepository.findById(id)
+        // Only Tenant Admin can transfer ownership
+        if (currentAdmin.getRole() != User.Role.ADMIN) {
+            throw new RuntimeException(
+                    "Only the Tenant Admin can transfer ownership."
+            );
+        }
+
+        User newAdmin = userRepository.findById(newAdminId)
                 .orElseThrow(() ->
                         new RuntimeException("User not found"));
 
-        if (!targetUser.getTenant().getId()
-                .equals(currentUser.getTenant().getId())) {
+        // Must belong to same tenant
+        if (!newAdmin.getTenant().getId()
+                .equals(currentAdmin.getTenant().getId())) {
             throw new RuntimeException("User not in your tenant!");
         }
 
-        targetUser.setRole(User.Role.valueOf(newRole));
+        // Cannot transfer to yourself
+        if (newAdmin.getId().equals(currentAdmin.getId())) {
+            throw new RuntimeException(
+                    "You are already the Tenant Admin."
+            );
+        }
 
-        userRepository.save(targetUser);
+        // Cannot transfer to SUPER_ADMIN
+        if (newAdmin.getRole() == User.Role.SUPER_ADMIN) {
+            throw new RuntimeException(
+                    "Cannot transfer ownership to Super Admin."
+            );
+        }
 
-        return toProfileResponse(targetUser);
+        // Already Admin
+        if (newAdmin.getRole() == User.Role.ADMIN) {
+            throw new RuntimeException(
+                    "This user is already the Tenant Admin."
+            );
+        }
+
+        // Transfer ownership
+        currentAdmin.setRole(User.Role.USER);
+        newAdmin.setRole(User.Role.ADMIN);
+
+        userRepository.save(currentAdmin);
+        userRepository.save(newAdmin);
+
+        return toProfileResponse(newAdmin);
     }
 
     @Transactional
@@ -117,16 +154,35 @@ public class AdminService {
             throw new RuntimeException("User not in your tenant!");
         }
 
-        // Delete dependent API logs first
+        // Admin cannot delete himself
+        if (targetUser.getId().equals(currentUser.getId())) {
+            throw new RuntimeException(
+                    "You cannot delete yourself."
+            );
+        }
+
+        // Never delete Super Admin
+        if (targetUser.getRole() == User.Role.SUPER_ADMIN) {
+            throw new RuntimeException(
+                    "Cannot delete Super Admin."
+            );
+        }
+
+        // Tenant Admin cannot be deleted
+        if (targetUser.getRole() == User.Role.ADMIN) {
+            throw new RuntimeException(
+                    "Tenant Admin cannot be deleted. Transfer ownership first."
+            );
+        }
+
         apiUsageLogRepository.deleteByUser(targetUser);
 
-        // Now delete the user
         userRepository.delete(targetUser);
     }
 
-    // ===========================
+    // ==================================================
     // SUPER ADMIN METHODS
-    // ===========================
+    // ==================================================
 
     @Transactional
     public List<TenantSummaryResponse> getAllTenantsWithUsage() {
@@ -137,44 +193,13 @@ public class AdminService {
                         .id(tenant.getId())
                         .name(tenant.getName())
                         .plan(tenant.getPlan().name())
-                        .userCount((long) userRepository.findByTenant(tenant).size())
-                        .apiCallCount(apiUsageLogRepository.countByTenant(tenant))
+                        .userCount(
+                                (long) userRepository.findByTenant(tenant).size()
+                        )
+                        .apiCallCount(
+                                apiUsageLogRepository.countByTenant(tenant)
+                        )
                         .build())
                 .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public List<UserProfileResponse> getUsersByTenantId(Long tenantId) {
-
-        Tenant tenant = tenantRepository.findById(tenantId)
-                .orElseThrow(() ->
-                        new RuntimeException("Tenant not found"));
-
-        return userRepository.findByTenant(tenant)
-                .stream()
-                .map(this::toProfileResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public UserProfileResponse changeUserRoleAsSuperAdmin(
-            Long id,
-            String newRole) {
-    	
-    	User currentUser = getCurrentUser();
-
-        User targetUser = userRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
-
-        if (targetUser.getId().equals(currentUser.getId())) {
-            throw new RuntimeException("You cannot change your own role.");
-        }
-        
-        targetUser.setRole(User.Role.valueOf(newRole));
-
-        userRepository.save(targetUser);
-
-        return toProfileResponse(targetUser);
     }
 }

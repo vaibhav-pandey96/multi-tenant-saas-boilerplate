@@ -1,7 +1,6 @@
 package com.saas.saas_boilerplate.Controller;
 
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
-import com.saas.saas_boilerplate.dto.UserProfileResponse;
 import com.saas.saas_boilerplate.model.Tenant;
 import com.saas.saas_boilerplate.repository.TenantRepository;
 import com.saas.saas_boilerplate.service.AdminService;
@@ -21,9 +20,10 @@ public class SuperAdminController {
     private final AdminService adminService;
     private final TenantRepository tenantRepository;
 
-    // =====================================================
+    // ==========================================================
     // PUBLIC API
-    // =====================================================
+    // Used during Registration
+    // ==========================================================
 
     @GetMapping("/tenant-names")
     public ResponseEntity<List<String>> getAllTenantNames() {
@@ -37,9 +37,9 @@ public class SuperAdminController {
         return ResponseEntity.ok(names);
     }
 
-    // =====================================================
-    // SUPER ADMIN APIs
-    // =====================================================
+    // ==========================================================
+    // SUPER ADMIN ONLY
+    // ==========================================================
 
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/tenants")
@@ -50,33 +50,4 @@ public class SuperAdminController {
         );
     }
 
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    @PutMapping("/users/{id}/make-tenant-admin")
-    public ResponseEntity<UserProfileResponse> makeTenantAdmin(
-            @PathVariable Long id) {
-
-        return ResponseEntity.ok(
-                adminService.changeUserRoleAsSuperAdmin(id, "ADMIN")
-        );
-    }
-
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    @PutMapping("/users/{id}/make-user")
-    public ResponseEntity<UserProfileResponse> makeUser(
-            @PathVariable Long id) {
-
-        return ResponseEntity.ok(
-                adminService.changeUserRoleAsSuperAdmin(id, "USER")
-        );
-    }
-
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    @GetMapping("/tenants/{tenantId}/users")
-    public ResponseEntity<List<UserProfileResponse>> getUsersOfTenant(
-            @PathVariable Long tenantId) {
-
-        return ResponseEntity.ok(
-                adminService.getUsersByTenantId(tenantId)
-        );
-    }
 }

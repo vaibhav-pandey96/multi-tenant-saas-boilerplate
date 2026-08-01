@@ -31,24 +31,42 @@ public class AuthService {
             throw new RuntimeException("Email already registered!");
         }
 
-        // Create or find tenant (company)
-        Tenant tenant = tenantRepository.findByName(request.getCompanyName())
-                .orElseGet(() -> tenantRepository.save(
-                        Tenant.builder()
-                                .name(request.getCompanyName())
-                                .plan(Tenant.Plan.FREE)
-                                .build()
-                ));
+        Tenant tenant;
+        User.Role role;
 
-        // Create verification token
+        // Check whether company already exists
+        var existingTenant = tenantRepository.findByName(request.getCompanyName());
+
+        if (existingTenant.isPresent()) {
+
+            // Existing company
+            tenant = existingTenant.get();
+
+            // New registrations join as normal USER
+            role = User.Role.USER;
+
+        } else {
+
+            // New company
+            tenant = tenantRepository.save(
+                    Tenant.builder()
+                            .name(request.getCompanyName())
+                            .plan(Tenant.Plan.FREE)
+                            .build()
+            );
+
+            // First user becomes Tenant Admin
+            role = User.Role.ADMIN;
+        }
+
+        // Verification token (for future email verification)
         String verificationToken = UUID.randomUUID().toString();
 
-        // Create and save user
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword())) // encrypt!
-                .role(User.Role.USER)
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(role)
                 .verified(true)
                 .verificationToken(null)
                 .tenant(tenant)
@@ -56,13 +74,18 @@ public class AuthService {
 
         userRepository.save(user);
 
-        // Send verification email
-//        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+        // emailService.sendVerificationEmail(user.getEmail(), verificationToken);
 
         return AuthResponse.builder()
                 .email(user.getEmail())
                 .name(user.getName())
-                .message("Registration successful! Please check your email to verify your account.")
+                .role(user.getRole().name())
+                .companyName(user.getTenant().getName())
+                .message(
+                        role == User.Role.ADMIN
+                                ? "Company created successfully! You are now the Tenant Admin."
+                                : "Registration successful! Your account has been created."
+                )
                 .build();
     }
     

@@ -2,16 +2,28 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function ProtectedRoute({ children, allowedRoles }) {
+
   const { user } = useAuth();
 
-  // Not logged in → go to login page
+  // Not logged in
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
-  // Wrong role → go to dashboard
+  // Route requires specific role
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" />;
+
+    switch (user.role) {
+
+      case 'SUPER_ADMIN':
+        return <Navigate to="/superadmin" replace />;
+
+      case 'ADMIN':
+        return <Navigate to="/admin" replace />;
+
+      default:
+        return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return children;

@@ -4,6 +4,7 @@ import com.saas.saas_boilerplate.dto.UserProfileResponse;
 import com.saas.saas_boilerplate.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,11 +12,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final AdminService adminService;
 
-    // Get all users in the logged-in admin's tenant
+    // ==================================================
+    // USER MANAGEMENT (Current Tenant Only)
+    // ==================================================
+
+    // Get all users of my tenant
     @GetMapping("/users")
     public ResponseEntity<List<UserProfileResponse>> getUsersInMyTenant() {
 
@@ -24,7 +30,7 @@ public class AdminController {
         );
     }
 
-    // Get a specific user in the same tenant
+    // Get one user of my tenant
     @GetMapping("/users/{id}")
     public ResponseEntity<UserProfileResponse> getUserById(
             @PathVariable Long id) {
@@ -34,32 +40,25 @@ public class AdminController {
         );
     }
 
-    // Promote a user to ADMIN within the same tenant
-    @PutMapping("/users/{id}/make-admin")
-    public ResponseEntity<UserProfileResponse> makeAdmin(
+    // Transfer Tenant Admin ownership
+    @PutMapping("/transfer-admin/{id}")
+    public ResponseEntity<UserProfileResponse> transferAdminRights(
             @PathVariable Long id) {
 
         return ResponseEntity.ok(
-                adminService.changeUserRoleInMyTenant(id, "ADMIN")
+                adminService.transferAdminRights(id)
         );
     }
 
-    // Demote an ADMIN back to USER within the same tenant
-    @PutMapping("/users/{id}/make-user")
-    public ResponseEntity<UserProfileResponse> makeUser(
-            @PathVariable Long id) {
-
-        return ResponseEntity.ok(
-                adminService.changeUserRoleInMyTenant(id, "USER")
-        );
-    }
-
-    // Delete a user from the same tenant
+    // Delete user
     @DeleteMapping("/users/{id}")
     public ResponseEntity<String> deleteUser(
             @PathVariable Long id) {
 
         adminService.deleteUserFromTenant(id);
-        return ResponseEntity.ok("User deleted successfully");
+
+        return ResponseEntity.ok(
+                "User deleted successfully."
+        );
     }
 }

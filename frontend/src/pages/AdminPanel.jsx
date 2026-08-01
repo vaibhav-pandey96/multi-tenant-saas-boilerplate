@@ -1,15 +1,33 @@
 import { useEffect, useState } from 'react';
 import {
-  Box, Typography, Paper, Table, TableBody,
-  TableCell, TableContainer, TableHead, TableRow,
-  Button, Chip, CircularProgress, Alert
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Chip,
+  CircularProgress,
+  Alert
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 function AdminPanel() {
+
+  const { user: currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
+
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
@@ -19,160 +37,232 @@ function AdminPanel() {
 
   const fetchUsers = async () => {
     setLoading(true);
+
     try {
       const res = await api.get('/api/admin/users');
       setUsers(res.data);
     } catch (err) {
-      setError('Failed to load users.');
+      setError(
+        err.response?.data?.message ||
+        err.response?.data ||
+        'Failed to load users.'
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const makeAdmin = async (id) => {
-    try {
-      await api.put(`/api/admin/users/${id}/make-admin`);
-      setMessage('User promoted to Admin!');
-      fetchUsers();
-    } catch (err) {
-      setError('Failed to promote user.');
-    }
-  };
+  const transferOwnership = async (id) => {
 
-  const makeUser = async (id) => {
+    const ok = window.confirm(
+      "Transfer Tenant Admin ownership?\n\nAfter this:\n• You will become a normal USER.\n• You will lose admin access.\n• You will need to login again."
+    );
+
+    if (!ok) return;
+
+    setError('');
+    setMessage('');
+    setProcessingId(id);
+
     try {
-      await api.put(`/api/admin/users/${id}/make-user`);
-      setMessage('User demoted to User!');
-      fetchUsers();
+
+      await api.put(`/api/admin/transfer-admin/${id}`);
+
+      logout();
+
+      alert("Ownership transferred successfully. Please login again.");
+
+      navigate("/login", { replace: true });
+
     } catch (err) {
-      setError('Failed to demote user.');
+
+      setError(
+        err.response?.data?.message ||
+        err.response?.data ||
+        "Failed to transfer ownership."
+      );
+
+    } finally {
+
+      setProcessingId(null);
+
     }
   };
 
   const deleteUser = async (id) => {
-    if (!window.confirm(
-      'Are you sure you want to delete this user?'
-    )) return;
+
+    if (!window.confirm("Delete this user?")) return;
+
+    setError('');
+    setMessage('');
+    setProcessingId(id);
+
     try {
+
       await api.delete(`/api/admin/users/${id}`);
-      setMessage('User deleted successfully!');
+
+      setMessage("User deleted successfully.");
+
       fetchUsers();
+
     } catch (err) {
-      setError('Failed to delete user.');
+
+      setError(
+        err.response?.data?.message ||
+        err.response?.data ||
+        "Failed to delete user."
+      );
+
+    } finally {
+
+      setProcessingId(null);
+
     }
   };
 
   return (
     <Box>
+
       <Navbar />
+
       <Box sx={{ p: 4 }}>
+
         <Typography variant="h4" fontWeight="bold" mb={1}>
-          Admin Panel
-        </Typography>
-        <Typography color="text.secondary" mb={3}>
-          Manage users in your company only
+          Tenant Admin Panel
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}
-                 onClose={() => setError('')}>
+        <Typography color="text.secondary" mb={3}>
+          Manage users in your company.
+        </Typography>
+
+        {error &&
+          <Alert severity="error" sx={{ mb:2 }} onClose={()=>setError('')}>
             {error}
           </Alert>
-        )}
-        {message && (
-          <Alert severity="success" sx={{ mb: 2 }}
-                 onClose={() => setMessage('')}>
+        }
+
+        {message &&
+          <Alert severity="success" sx={{ mb:2 }} onClose={()=>setMessage('')}>
             {message}
           </Alert>
-        )}
+        }
 
         {loading ? (
+
           <Box display="flex" justifyContent="center" mt={5}>
             <CircularProgress />
           </Box>
+
         ) : (
-          <TableContainer component={Paper} elevation={2}
-                          sx={{ borderRadius: 2 }}>
+
+          <TableContainer component={Paper} elevation={2} sx={{ borderRadius:2 }}>
+
             <Table>
-              <TableHead sx={{ bgcolor: '#1976d2' }}>
+
+              <TableHead sx={{ bgcolor:"#1976d2" }}>
                 <TableRow>
-                  <TableCell sx={{ color: 'white',
-                                   fontWeight: 'bold' }}>
-                    Name
-                  </TableCell>
-                  <TableCell sx={{ color: 'white',
-                                   fontWeight: 'bold' }}>
-                    Email
-                  </TableCell>
-                  <TableCell sx={{ color: 'white',
-                                   fontWeight: 'bold' }}>
-                    Role
-                  </TableCell>
-                  <TableCell sx={{ color: 'white',
-                                   fontWeight: 'bold' }}>
-                    Actions
-                  </TableCell>
+                  <TableCell sx={{ color:"white", fontWeight:"bold" }}>Name</TableCell>
+                  <TableCell sx={{ color:"white", fontWeight:"bold" }}>Email</TableCell>
+                  <TableCell sx={{ color:"white", fontWeight:"bold" }}>Role</TableCell>
+                  <TableCell sx={{ color:"white", fontWeight:"bold" }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>
-                {users.map((user) => (
-                  <TableRow key={user.id} hover>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={user.role}
-                        color={
-                          user.role === 'ADMIN' ? 'warning' :
-                          user.role === 'SUPER_ADMIN' ? 'error' :
-                          'primary'
-                        }
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Box display="flex" gap={1}>
-                        {user.role === 'USER' && (
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            color="warning"
-                            onClick={() => makeAdmin(user.id)}>
-                            Make Admin
-                          </Button>
-                        )}
-                        {user.role === 'ADMIN' && (
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            color="primary"
-                            onClick={() => makeUser(user.id)}>
-                            Make User
-                          </Button>
-                        )}
-                        <Button
-                          variant="outlined"
+
+                {users.map(user => {
+
+                  const isCurrentUser = currentUser?.email === user.email;
+
+                  return (
+
+                    <TableRow key={user.id} hover>
+
+                      <TableCell>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          {user.name}
+                          {isCurrentUser &&
+                            <Chip label="You" color="success" size="small" />
+                          }
+                        </Box>
+                      </TableCell>
+
+                      <TableCell>{user.email}</TableCell>
+
+                      <TableCell>
+                        <Chip
+                          label={user.role}
+                          color={user.role === "ADMIN" ? "warning" : "primary"}
                           size="small"
-                          color="error"
-                          onClick={() => deleteUser(user.id)}>
-                          Delete
-                        </Button>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        />
+                      </TableCell>
+
+                      <TableCell>
+
+                        {isCurrentUser ? (
+
+                          <Typography variant="body2" color="text.secondary">
+                            Your Account
+                          </Typography>
+
+                        ) : (
+
+                          <Box display="flex" gap={1}>
+
+                            {user.role === "USER" && (
+
+                              <Button
+                                variant="outlined"
+                                color="warning"
+                                size="small"
+                                disabled={processingId === user.id}
+                                onClick={() => transferOwnership(user.id)}
+                              >
+                                Transfer Ownership
+                              </Button>
+
+                            )}
+
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              size="small"
+                              disabled={processingId === user.id}
+                              onClick={() => deleteUser(user.id)}
+                            >
+                              Delete
+                            </Button>
+
+                          </Box>
+
+                        )}
+
+                      </TableCell>
+
+                    </TableRow>
+
+                  );
+
+                })}
+
                 {users.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} align="center">
-                      No users found in your company.
+                      No users found.
                     </TableCell>
                   </TableRow>
                 )}
+
               </TableBody>
+
             </Table>
+
           </TableContainer>
+
         )}
+
       </Box>
+
     </Box>
   );
 }
