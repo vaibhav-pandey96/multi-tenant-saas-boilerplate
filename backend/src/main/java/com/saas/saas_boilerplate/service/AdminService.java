@@ -1,5 +1,6 @@
 package com.saas.saas_boilerplate.service;
 
+import com.saas.saas_boilerplate.dto.ChangePlanRequest;
 import com.saas.saas_boilerplate.dto.CompanyDetailsResponse;
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
 import com.saas.saas_boilerplate.dto.UserProfileResponse;
@@ -49,6 +50,23 @@ public class AdminService {
                 .role(user.getRole().name())
                 .companyName(user.getTenant().getName())
                 .plan(user.getTenant().getPlan().name())
+                .build();
+    }
+    
+    private CompanyDetailsResponse toCompanyDetailsResponse(Tenant tenant) {
+
+        long userCount = userRepository.findByTenant(tenant).size();
+
+        long apiCallCount = apiUsageLogRepository.countByTenant(tenant);
+
+        return CompanyDetailsResponse.builder()
+                .id(tenant.getId())
+                .name(tenant.getName())
+                .plan(tenant.getPlan().name())
+                .status(tenant.getStatus().name())
+                .createdAt(tenant.getCreatedAt())
+                .userCount(userCount)
+                .apiCallCount(apiUsageLogRepository.countByTenant(tenant))
                 .build();
     }
    
@@ -216,18 +234,45 @@ public class AdminService {
                 .orElseThrow(() ->
                         new RuntimeException("Company not found."));
 
-        long userCount = userRepository.findByTenant(tenant).size();
+        return toCompanyDetailsResponse(tenant);
+    }
+    
+    @Transactional
+    public CompanyDetailsResponse changeCompanyPlan(
+            Long tenantId,
+            ChangePlanRequest request) {
 
-        long apiCallCount = apiUsageLogRepository.countByTenant(tenant);
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() ->
+                        new RuntimeException("Company not found."));
 
-        return CompanyDetailsResponse.builder()
-                .id(tenant.getId())
-                .name(tenant.getName())
-                .plan(tenant.getPlan().name())
-                .status(tenant.getStatus().name())
-                .createdAt(tenant.getCreatedAt())
-                .userCount(userCount)
-                .apiCallCount(apiCallCount)
-                .build();
+        Tenant.Plan newPlan;
+
+        try {
+
+            newPlan = Tenant.Plan.valueOf(
+                    request.getPlan().toUpperCase()
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            throw new RuntimeException(
+                    "Invalid plan: " + request.getPlan()
+            );
+
+        }
+
+        // Already on same plan
+        if (tenant.getPlan() == newPlan) {
+            throw new RuntimeException(
+                    "Company is already on the " + newPlan + " plan."
+            );
+        }
+
+        tenant.setPlan(newPlan);
+
+        tenantRepository.save(tenant);
+
+        return toCompanyDetailsResponse(tenant);
     }
 }
