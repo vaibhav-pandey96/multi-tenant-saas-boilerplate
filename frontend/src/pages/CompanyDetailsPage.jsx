@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
+
 import {
     Box,
     Typography,
@@ -20,6 +21,11 @@ import {
     DialogActions,
     FormControl,
     InputLabel,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
     Select,
     MenuItem,
 } from "@mui/material";
@@ -40,6 +46,9 @@ function CompanyDetailsPage() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState("");
     const [saving, setSaving] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [confirmCompanyName, setConfirmCompanyName] = useState("");
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         fetchCompany();
@@ -503,6 +512,7 @@ function CompanyDetailsPage() {
                     <Button
                         variant="contained"
                         color="error"
+                        onClick={() => setDeleteDialogOpen(true)}
                     >
                         Delete Company
                     </Button>
@@ -590,6 +600,72 @@ function CompanyDetailsPage() {
                 </Dialog>
 
             </Box >
+
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                maxWidth="sm"
+                fullWidth
+            >
+
+                <DialogTitle color="error">
+                    Delete Company
+                </DialogTitle>
+
+                <DialogContent>
+
+                    <Typography mb={2}>
+
+                        This action <b>cannot be undone.</b>
+
+                    </Typography>
+
+                    <Typography mb={3}>
+
+                        Type the company name
+                        <b> "{company?.name}" </b>
+                        to confirm deletion.
+
+                    </Typography>
+
+                    <TextField
+                        fullWidth
+                        label="Company Name"
+                        value={confirmCompanyName}
+                        onChange={(e) =>
+                            setConfirmCompanyName(e.target.value)
+                        }
+                    />
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button
+                        onClick={() => {
+
+                            setDeleteDialogOpen(false);
+                            setConfirmCompanyName("");
+
+                        }}
+                    >
+                        Cancel
+                    </Button>
+
+                    <Button
+                        color="error"
+                        variant="contained"
+                        disabled={
+                            confirmCompanyName !== company?.name ||
+                            deleting
+                        }
+                    >
+                        Delete Company
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
 
         </Box>
 

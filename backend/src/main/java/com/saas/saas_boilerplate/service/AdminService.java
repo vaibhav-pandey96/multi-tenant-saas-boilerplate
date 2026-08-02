@@ -8,6 +8,9 @@ import com.saas.saas_boilerplate.dto.UserProfileResponse;
 import com.saas.saas_boilerplate.model.Tenant;
 import com.saas.saas_boilerplate.model.User;
 import com.saas.saas_boilerplate.repository.ApiUsageLogRepository;
+import com.saas.saas_boilerplate.repository.InvoiceRepository;
+import com.saas.saas_boilerplate.repository.PaymentMethodRepository;
+import com.saas.saas_boilerplate.repository.SubscriptionRepository;
 import com.saas.saas_boilerplate.repository.TenantRepository;
 import com.saas.saas_boilerplate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,9 @@ public class AdminService {
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
     private final ApiUsageLogRepository apiUsageLogRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
     
     
 
@@ -226,6 +232,42 @@ public class AdminService {
                         )
                         .build())
                 .collect(Collectors.toList());
+    }
+    
+    @Transactional
+    public void deleteCompany(Long tenantId) {
+
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() ->
+                        new RuntimeException("Company not found."));
+
+        // Never allow deleting the Platform company
+        boolean containsSuperAdmin = !userRepository
+                .findByTenantAndRole(
+                        tenant,
+                        User.Role.SUPER_ADMIN
+                )
+                .isEmpty();
+
+        if (containsSuperAdmin) {
+            throw new RuntimeException(
+                    "The Platform company cannot be deleted."
+            );
+        }
+
+        // Delete child records first
+        apiUsageLogRepository.deleteByTenant(tenant);
+
+        invoiceRepository.deleteByTenant(tenant);
+
+        paymentMethodRepository.deleteByTenant(tenant);
+
+        subscriptionRepository.deleteByTenant(tenant);
+
+        userRepository.deleteByTenant(tenant);
+
+        // Finally delete tenant
+        tenantRepository.delete(tenant);
     }
     
     @Transactional
