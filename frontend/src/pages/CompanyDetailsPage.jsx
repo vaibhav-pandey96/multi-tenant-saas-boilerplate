@@ -35,10 +35,11 @@ function CompanyDetailsPage() {
     const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
+    const [processing, setProcessing] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState("");
     const [saving, setSaving] = useState(false);
-    const [success, setSuccess] = useState("");
 
     useEffect(() => {
         fetchCompany();
@@ -81,7 +82,7 @@ function CompanyDetailsPage() {
                 }
             );
 
-            setSuccess("Subscription updated successfully.");
+            setMessage("Subscription updated successfully.");
 
             setDialogOpen(false);
 
@@ -122,6 +123,51 @@ function CompanyDetailsPage() {
 
             default:
                 return "default";
+
+        }
+
+    };
+
+    const changeStatus = async () => {
+
+        try {
+
+            setProcessing(true);
+            setError("");
+            setMessage("");
+
+            const newStatus =
+                company.status === "ACTIVE"
+                    ? "SUSPENDED"
+                    : "ACTIVE";
+
+            await api.put(
+                `/api/superadmin/company/${id}/status`,
+                {
+                    status: newStatus
+                }
+            );
+
+            setMessage(
+                `Company ${newStatus === "ACTIVE"
+                    ? "activated"
+                    : "suspended"
+                } successfully.`
+            );
+
+            fetchCompany();
+
+        } catch (err) {
+
+            setError(
+                err.response?.data?.message ||
+                err.response?.data ||
+                "Failed to update company status."
+            );
+
+        } finally {
+
+            setProcessing(false);
 
         }
 
@@ -186,32 +232,8 @@ function CompanyDetailsPage() {
 
             <Navbar />
 
-        <Box sx={{ p: 4 }}>
-
-            <Button
-                variant="outlined"
-                sx={{ mb: 3 }}
-                onClick={() => navigate("/superadmin")}
-            >
-                ← Back to Dashboard
-            </Button>
-
-            <Typography
-                variant="h4"
-                fontWeight="bold"
-            >
-                {company.name}
-            </Typography>
-
-            <Typography
-                color="text.secondary"
-                mb={4}
-            >
-                Company Management
-            </Typography>
-
-            {/* Error Message */}
             {error && (
+
                 <Alert
                     severity="error"
                     sx={{ mb: 3 }}
@@ -219,321 +241,355 @@ function CompanyDetailsPage() {
                 >
                     {error}
                 </Alert>
+
             )}
 
-            {/* Success Message */}
-            {success && (
+            {message && (
+
                 <Alert
                     severity="success"
                     sx={{ mb: 3 }}
-                    onClose={() => setSuccess("")}
+                    onClose={() => setMessage("")}
                 >
-                    {success}
+                    {message}
                 </Alert>
+
             )}
 
-
-            <Grid container spacing={3}>
-
-                <Grid item xs={12} md={3}>
-
-                    <Card>
-
-                        <CardContent>
-
-                            <Typography color="text.secondary">
-                                Company
-                            </Typography>
-
-                            <Typography variant="h6">
-                                {company.name}
-                            </Typography>
-
-                        </CardContent>
-
-                    </Card>
-
-                </Grid>
-
-                <Grid item xs={12} md={3}>
-
-                    <Card>
-
-                        <CardContent>
-
-                            <Typography color="text.secondary">
-                                Subscription
-                            </Typography>
-
-                            <Chip
-                                label={company.plan}
-                                color={getPlanColor(company.plan)}
-                            />
-
-                        </CardContent>
-
-                    </Card>
-
-                </Grid>
-
-                <Grid item xs={12} md={3}>
-
-                    <Card>
-
-                        <CardContent>
-
-                            <Typography color="text.secondary">
-                                Status
-                            </Typography>
-
-                            <Chip
-                                label={company.status}
-                                color={getStatusColor(company.status)}
-                            />
-
-                        </CardContent>
-
-                    </Card>
-
-                </Grid>
-
-                <Grid item xs={12} md={3}>
-
-                    <Card>
-
-                        <CardContent>
-
-                            <Typography color="text.secondary">
-                                Created
-                            </Typography>
-
-                            <Typography variant="h6">
-
-                                {dayjs(company.createdAt)
-                                    .format("DD MMM YYYY")}
-
-                            </Typography>
-
-                        </CardContent>
-
-                    </Card>
-
-                </Grid>
-
-            </Grid>
-
-            <Grid container spacing={3} mt={1}>
-
-                <Grid item xs={12} md={6}>
-
-                    <Card>
-
-                        <CardContent>
-
-                            <Typography color="text.secondary">
-                                Total Users
-                            </Typography>
-
-                            <Typography variant="h4">
-                                {company.userCount}
-                            </Typography>
-
-                        </CardContent>
-
-                    </Card>
-
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-
-                    <Card>
-
-                        <CardContent>
-
-                            <Typography color="text.secondary">
-                                API Calls
-                            </Typography>
-
-                            <Typography variant="h4">
-                                {company.apiCallCount.toLocaleString()}
-                            </Typography>
-
-                        </CardContent>
-
-                    </Card>
-
-                </Grid>
-
-            </Grid>
-
-            <Paper sx={{ p: 3, mt: 4 }}>
-
-                <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    mb={3}
-                >
-                    Subscription
-                </Typography>
-
-                <Typography color="text.secondary" mb={2}>
-                    Current Plan
-                </Typography>
-
-                <Chip
-                    label={company.plan}
-                    color={getPlanColor(company.plan)}
-                    sx={{ mb: 3 }}
-                />
-
-                <Box>
-
-                    <Button
-                        variant="contained"
-                        disabled={!company}
-                        onClick={() => {
-
-                            setSelectedPlan(company.plan);
-                            setDialogOpen(true);
-
-                        }}
-                    >
-                        Change Plan
-                    </Button>
-
-                </Box>
-
-            </Paper>
-
-            <Paper sx={{ p: 3, mt: 4 }}>
-
-                <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    mb={3}
-                >
-                    Platform Controls
-                </Typography>
+            <Box sx={{ p: 4 }}>
 
                 <Button
-                    variant="contained"
-                    color="warning"
+                    variant="outlined"
+                    sx={{ mb: 3 }}
+                    onClick={() => navigate("/superadmin")}
                 >
-                    Suspend Company
+                    ← Back to Dashboard
                 </Button>
 
-            </Paper>
-
-            <Paper sx={{ p: 3, mt: 4 }}>
-
                 <Typography
-                    variant="h6"
+                    variant="h4"
                     fontWeight="bold"
-                    color="error"
-                    mb={3}
                 >
-                    Danger Zone
+                    {company.name}
                 </Typography>
-
-                <Divider sx={{ mb: 3 }} />
 
                 <Typography
                     color="text.secondary"
-                    mb={3}
+                    mb={4}
                 >
-                    Permanently delete this company and all associated platform resources.
+                    Company Management
                 </Typography>
 
-                <Button
-                    variant="contained"
-                    color="error"
-                >
-                    Delete Company
-                </Button>
 
-            </Paper>
+                <Grid container spacing={3}>
 
-            <Dialog
-                open={dialogOpen}
-                onClose={() => setDialogOpen(false)}
-                fullWidth
-                maxWidth="sm"
-            >
+                    <Grid item xs={12} md={3}>
 
-                <DialogTitle>
+                        <Card>
 
-                    Change Subscription Plan
+                            <CardContent>
 
-                </DialogTitle>
+                                <Typography color="text.secondary">
+                                    Company
+                                </Typography>
 
-                <DialogContent>
+                                <Typography variant="h6">
+                                    {company.name}
+                                </Typography>
 
-                    <FormControl
-                        fullWidth
-                        sx={{ mt: 2 }}
+                            </CardContent>
+
+                        </Card>
+
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+
+                        <Card>
+
+                            <CardContent>
+
+                                <Typography color="text.secondary">
+                                    Subscription
+                                </Typography>
+
+                                <Chip
+                                    label={company.plan}
+                                    color={getPlanColor(company.plan)}
+                                />
+
+                            </CardContent>
+
+                        </Card>
+
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+
+                        <Card>
+
+                            <CardContent>
+
+                                <Typography color="text.secondary">
+                                    Status
+                                </Typography>
+
+                                <Chip
+                                    label={company.status}
+                                    color={getStatusColor(company.status)}
+                                />
+
+                            </CardContent>
+
+                        </Card>
+
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+
+                        <Card>
+
+                            <CardContent>
+
+                                <Typography color="text.secondary">
+                                    Created
+                                </Typography>
+
+                                <Typography variant="h6">
+
+                                    {dayjs(company.createdAt)
+                                        .format("DD MMM YYYY")}
+
+                                </Typography>
+
+                            </CardContent>
+
+                        </Card>
+
+                    </Grid>
+
+                </Grid>
+
+                <Grid container spacing={3} mt={1}>
+
+                    <Grid item xs={12} md={6}>
+
+                        <Card>
+
+                            <CardContent>
+
+                                <Typography color="text.secondary">
+                                    Total Users
+                                </Typography>
+
+                                <Typography variant="h4">
+                                    {company.userCount}
+                                </Typography>
+
+                            </CardContent>
+
+                        </Card>
+
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+
+                        <Card>
+
+                            <CardContent>
+
+                                <Typography color="text.secondary">
+                                    API Calls
+                                </Typography>
+
+                                <Typography variant="h4">
+                                    {company.apiCallCount.toLocaleString()}
+                                </Typography>
+
+                            </CardContent>
+
+                        </Card>
+
+                    </Grid>
+
+                </Grid>
+
+                <Paper sx={{ p: 3, mt: 4 }}>
+
+                    <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        mb={3}
                     >
+                        Subscription
+                    </Typography>
 
-                        <InputLabel>
-                            Plan
-                        </InputLabel>
+                    <Typography color="text.secondary" mb={2}>
+                        Current Plan
+                    </Typography>
 
-                        <Select
-                            value={selectedPlan}
-                            label="Plan"
-                            onChange={(e) => setSelectedPlan(e.target.value)}
+                    <Chip
+                        label={company.plan}
+                        color={getPlanColor(company.plan)}
+                        sx={{ mb: 3 }}
+                    />
+
+                    <Box>
+
+                        <Button
+                            variant="contained"
+                            disabled={!company}
+                            onClick={() => {
+
+                                setSelectedPlan(company.plan);
+                                setDialogOpen(true);
+
+                            }}
                         >
+                            Change Plan
+                        </Button>
 
-                            {["FREE", "BASIC", "PRO", "ENTERPRISE"].map((plan) => (
+                    </Box>
 
-                                <MenuItem
-                                    key={plan}
-                                    value={plan}
-                                    disabled={plan === company.plan}
-                                >
-                                    {plan}
+                </Paper>
 
-                                    {plan === company.plan && " (Current Plan)"}
+                <Paper sx={{ p: 3, mt: 4 }}>
 
-                                </MenuItem>
-
-                            ))}
-
-                        </Select>
-
-                    </FormControl>
-
-                </DialogContent>
-
-                <DialogActions>
-
-                    <Button
-                        onClick={() =>
-                            setDialogOpen(false)
-                        }
+                    <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        mb={3}
                     >
-                        Cancel
-                    </Button>
+                        Platform Controls
+                    </Typography>
 
                     <Button
                         variant="contained"
-                        onClick={changePlan}
-                        disabled={
-                            saving ||
-                            selectedPlan === company.plan
+                        color={
+                            company.status === "ACTIVE"
+                                ? "warning"
+                                : "success"
                         }
+                        disabled={processing}
+                        onClick={changeStatus}
                     >
-
-                        {saving
-                            ? "Saving..."
-                            : "Update"}
-
+                        {company.status === "ACTIVE"
+                            ? "Suspend Company"
+                            : "Activate Company"}
                     </Button>
 
-                </DialogActions>
+                </Paper>
 
-            </Dialog>
+                <Paper sx={{ p: 3, mt: 4 }}>
 
-        </Box >
+                    <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        color="error"
+                        mb={3}
+                    >
+                        Danger Zone
+                    </Typography>
+
+                    <Divider sx={{ mb: 3 }} />
+
+                    <Typography
+                        color="text.secondary"
+                        mb={3}
+                    >
+                        Permanently delete this company and all associated platform resources.
+                    </Typography>
+
+                    <Button
+                        variant="contained"
+                        color="error"
+                    >
+                        Delete Company
+                    </Button>
+
+                </Paper>
+
+                <Dialog
+                    open={dialogOpen}
+                    onClose={() => setDialogOpen(false)}
+                    fullWidth
+                    maxWidth="sm"
+                >
+
+                    <DialogTitle>
+
+                        Change Subscription Plan
+
+                    </DialogTitle>
+
+                    <DialogContent>
+
+                        <FormControl
+                            fullWidth
+                            sx={{ mt: 2 }}
+                        >
+
+                            <InputLabel>
+                                Plan
+                            </InputLabel>
+
+                            <Select
+                                value={selectedPlan}
+                                label="Plan"
+                                onChange={(e) => setSelectedPlan(e.target.value)}
+                            >
+
+                                {["FREE", "BASIC", "PRO", "ENTERPRISE"].map((plan) => (
+
+                                    <MenuItem
+                                        key={plan}
+                                        value={plan}
+                                        disabled={plan === company.plan}
+                                    >
+                                        {plan}
+
+                                        {plan === company.plan && " (Current Plan)"}
+
+                                    </MenuItem>
+
+                                ))}
+
+                            </Select>
+
+                        </FormControl>
+
+                    </DialogContent>
+
+                    <DialogActions>
+
+                        <Button
+                            onClick={() =>
+                                setDialogOpen(false)
+                            }
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            onClick={changePlan}
+                            disabled={
+                                saving ||
+                                selectedPlan === company.plan
+                            }
+                        >
+
+                            {saving
+                                ? "Saving..."
+                                : "Update"}
+
+                        </Button>
+
+                    </DialogActions>
+
+                </Dialog>
+
+            </Box >
 
         </Box>
 

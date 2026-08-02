@@ -1,5 +1,6 @@
 package com.saas.saas_boilerplate.service;
 
+import com.saas.saas_boilerplate.dto.ChangeCompanyStatusRequest;
 import com.saas.saas_boilerplate.dto.ChangePlanRequest;
 import com.saas.saas_boilerplate.dto.CompanyDetailsResponse;
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
@@ -270,6 +271,47 @@ public class AdminService {
         }
 
         tenant.setPlan(newPlan);
+
+        tenantRepository.save(tenant);
+
+        return toCompanyDetailsResponse(tenant);
+    }
+    
+    @Transactional
+    public CompanyDetailsResponse changeCompanyStatus(
+            Long tenantId,
+            ChangeCompanyStatusRequest request) {
+
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() ->
+                        new RuntimeException("Company not found."));
+
+        Tenant.Status newStatus;
+
+        try {
+
+            newStatus = Tenant.Status.valueOf(
+                    request.getStatus().toUpperCase()
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            throw new RuntimeException(
+                    "Invalid status: " + request.getStatus()
+            );
+
+        }
+
+        // Already in same status
+        if (tenant.getStatus() == newStatus) {
+
+            throw new RuntimeException(
+                    "Company is already " + newStatus + "."
+            );
+
+        }
+
+        tenant.setStatus(newStatus);
 
         tenantRepository.save(tenant);
 

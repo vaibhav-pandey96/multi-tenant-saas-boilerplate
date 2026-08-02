@@ -1,5 +1,6 @@
 package com.saas.saas_boilerplate.Controller;
 
+import com.saas.saas_boilerplate.dto.ChangeCompanyStatusRequest;
 import com.saas.saas_boilerplate.dto.ChangePlanRequest;
 import com.saas.saas_boilerplate.dto.CompanyDetailsResponse;
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
@@ -73,6 +74,18 @@ public class SuperAdminController {
 
         return ResponseEntity.ok(
                 adminService.changeCompanyPlan(id, request)
+        );
+    }
+    
+ // Change Company Status
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping("/company/{id}/status")
+    public ResponseEntity<CompanyDetailsResponse> changeCompanyStatus(
+            @PathVariable Long id,
+            @RequestBody ChangeCompanyStatusRequest request) {
+
+        return ResponseEntity.ok(
+                adminService.changeCompanyStatus(id, request)
         );
     }
 
