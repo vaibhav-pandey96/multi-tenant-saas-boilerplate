@@ -88,5 +88,16 @@ public class SuperAdminController {
                 adminService.changeCompanyStatus(id, request)
         );
     }
+    
+ // Delete Company
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @DeleteMapping("/company/{id}")
+    public ResponseEntity<String> deleteCompany(
+            @PathVariable Long id) {
+
+        adminService.deleteCompany(id);
+
+        return ResponseEntity.ok("Company deleted successfully.");
+    }
 
 }
