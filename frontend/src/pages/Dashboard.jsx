@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { Person, Business, Badge } from '@mui/icons-material';
 import Navbar from '../components/Navbar';
+import TenantContentFeed from '../components/TenantContentFeed';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -128,6 +129,8 @@ function Dashboard() {
           </Grid>
 
         </Grid>
+
+        <TenantContentFeed />
       </Box>
     </Box>
   );
