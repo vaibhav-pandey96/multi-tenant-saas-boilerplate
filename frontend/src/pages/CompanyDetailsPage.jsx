@@ -178,6 +178,40 @@ function CompanyDetailsPage() {
 
     };
 
+    const deleteCompany = async () => {
+
+        try {
+
+            setDeleting(true);
+            setError("");
+            setMessage("");
+
+            await api.delete(`/api/superadmin/company/${id}`);
+
+            setMessage("Company deleted successfully.");
+
+            setDeleteDialogOpen(false);
+            setConfirmCompanyName("");
+
+            navigate("/superadmin");
+
+        } catch (err) {
+
+            setError(
+                err.response?.data?.message ||
+                err.response?.data?.error ||
+                err.response?.data ||
+                "Failed to delete company."
+            );
+
+        } finally {
+
+            setDeleting(false);
+
+        }
+
+    };
+
     const getStatusColor = (status) => {
 
         switch (status) {
@@ -651,12 +685,13 @@ function CompanyDetailsPage() {
                     <Button
                         color="error"
                         variant="contained"
+                        onClick={deleteCompany}
                         disabled={
                             confirmCompanyName !== company?.name ||
                             deleting
                         }
                     >
-                        Delete Company
+                        {deleting ? "Deleting..." : "Delete Company"}
                     </Button>
 
                 </DialogActions>
