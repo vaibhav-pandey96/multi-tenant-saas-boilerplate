@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import Navbar from "../components/Navbar";
 
 import {
     Box,
@@ -25,6 +26,7 @@ import {
 } from "@mui/material";
 
 import api from "../api/axios";
+import Navbar from "../components/Navbar";
 
 function CompanyDetailsPage() {
 
@@ -150,6 +152,7 @@ function CompanyDetailsPage() {
 
         return (
 
+
             <Box
                 display="flex"
                 justifyContent="center"
@@ -179,6 +182,10 @@ function CompanyDetailsPage() {
     }
 
     return (
+
+        <Box>
+
+            <Navbar />
 
         <Box sx={{ p: 4 }}>
 
@@ -528,6 +535,9 @@ function CompanyDetailsPage() {
             </Dialog>
 
         </Box >
+
+        </Box>
+
     );
 
 }

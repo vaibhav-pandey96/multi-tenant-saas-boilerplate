@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 import {
   Box,
@@ -29,7 +30,7 @@ function SuperAdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTenants();
@@ -122,305 +123,310 @@ function SuperAdminPage() {
   };
 
   return (
+    <Box>
+      <Navbar />
 
-    <Box sx={{ p: 4 }}>
 
-      {/* Header */}
+      <Box sx={{ p: 4 }}>
 
-      <Box mb={4}>
+        {/* Header */}
 
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-        >
-          Platform Dashboard
-        </Typography>
-
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          mt={1}
-        >
-          Monitor companies, subscriptions, billing and platform health.
-        </Typography>
-
-      </Box>
-
-      {error && (
-
-        <Alert
-          severity="error"
-          sx={{ mb: 3 }}
-        >
-          {error}
-        </Alert>
-
-      )}
-
-      {/* Dashboard Cards */}
-
-      <Grid
-        container
-        spacing={3}
-        mb={4}
-      >
-
-        <Grid item xs={12} md={4} lg={2}>
-          <Card>
-            <CardContent>
-              <Typography color="text.secondary">
-                Companies
-              </Typography>
-
-              <Typography variant="h4">
-                {tenants.length}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4} lg={2}>
-          <Card>
-            <CardContent>
-              <Typography color="text.secondary">
-                Users
-              </Typography>
-
-              <Typography variant="h4">
-                {totalUsers}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4} lg={2}>
-          <Card>
-            <CardContent>
-              <Typography color="text.secondary">
-                API Calls
-              </Typography>
-
-              <Typography variant="h4">
-                {totalApiCalls}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4} lg={2}>
-          <Card>
-            <CardContent>
-              <Typography color="text.secondary">
-                Active
-              </Typography>
-
-              <Typography variant="h4">
-                {activeCompanies}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4} lg={2}>
-          <Card>
-            <CardContent>
-              <Typography color="text.secondary">
-                Trial
-              </Typography>
-
-              <Typography variant="h4">
-                {trialCompanies}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4} lg={2}>
-          <Card>
-            <CardContent>
-              <Typography color="text.secondary">
-                Suspended
-              </Typography>
-
-              <Typography variant="h4">
-                {suspendedCompanies}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-      </Grid>
-
-      {/* Companies Table */}
-
-      <Paper
-        elevation={3}
-        sx={{
-          borderRadius: 3,
-          overflow: "hidden"
-        }}
-      >
-
-        <Box
-          sx={{
-            p: 2,
-            borderBottom: "1px solid #eee"
-          }}
-        >
+        <Box mb={4}>
 
           <Typography
-            variant="h6"
+            variant="h4"
             fontWeight="bold"
           >
-            Company Management
+            Platform Dashboard
+          </Typography>
+
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            mt={1}
+          >
+            Monitor companies, subscriptions, billing and platform health.
           </Typography>
 
         </Box>
 
-        {loading ? (
+        {error && (
+
+          <Alert
+            severity="error"
+            sx={{ mb: 3 }}
+          >
+            {error}
+          </Alert>
+
+        )}
+
+        {/* Dashboard Cards */}
+
+        <Grid
+          container
+          spacing={3}
+          mb={4}
+        >
+
+          <Grid item xs={12} md={4} lg={2}>
+            <Card>
+              <CardContent>
+                <Typography color="text.secondary">
+                  Companies
+                </Typography>
+
+                <Typography variant="h4">
+                  {tenants.length}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={4} lg={2}>
+            <Card>
+              <CardContent>
+                <Typography color="text.secondary">
+                  Users
+                </Typography>
+
+                <Typography variant="h4">
+                  {totalUsers}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={4} lg={2}>
+            <Card>
+              <CardContent>
+                <Typography color="text.secondary">
+                  API Calls
+                </Typography>
+
+                <Typography variant="h4">
+                  {totalApiCalls}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={4} lg={2}>
+            <Card>
+              <CardContent>
+                <Typography color="text.secondary">
+                  Active
+                </Typography>
+
+                <Typography variant="h4">
+                  {activeCompanies}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={4} lg={2}>
+            <Card>
+              <CardContent>
+                <Typography color="text.secondary">
+                  Trial
+                </Typography>
+
+                <Typography variant="h4">
+                  {trialCompanies}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={4} lg={2}>
+            <Card>
+              <CardContent>
+                <Typography color="text.secondary">
+                  Suspended
+                </Typography>
+
+                <Typography variant="h4">
+                  {suspendedCompanies}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+        </Grid>
+
+        {/* Companies Table */}
+
+        <Paper
+          elevation={3}
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden"
+          }}
+        >
 
           <Box
-            display="flex"
-            justifyContent="center"
-            py={6}
+            sx={{
+              p: 2,
+              borderBottom: "1px solid #eee"
+            }}
           >
-            <CircularProgress />
+
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+            >
+              Company Management
+            </Typography>
+
           </Box>
 
-        ) : tenants.length === 0 ? (
+          {loading ? (
 
-          <Typography
-            py={5}
-            align="center"
-            color="text.secondary"
-          >
-            No companies registered yet.
-          </Typography>
+            <Box
+              display="flex"
+              justifyContent="center"
+              py={6}
+            >
+              <CircularProgress />
+            </Box>
 
-        ) : (
+          ) : tenants.length === 0 ? (
 
-          <TableContainer>
+            <Typography
+              py={5}
+              align="center"
+              color="text.secondary"
+            >
+              No companies registered yet.
+            </Typography>
 
-            <Table>
+          ) : (
 
-              <TableHead>
+            <TableContainer>
 
-                <TableRow>
+              <Table>
 
-                  <TableCell>
-                    <b>Company</b>
-                  </TableCell>
+                <TableHead>
 
-                  <TableCell>
-                    <b>Plan</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Status</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Users</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>API Calls</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Created</b>
-                  </TableCell>
-
-                  <TableCell align="center">
-                    <b>Actions</b>
-                  </TableCell>
-
-                </TableRow>
-
-              </TableHead>
-
-              <TableBody>
-
-                {tenants.map((tenant) => (
-
-                  <TableRow
-                    hover
-                    key={tenant.id}
-                  >
+                  <TableRow>
 
                     <TableCell>
-
-                      <Typography fontWeight={600}>
-                        {tenant.name}
-                      </Typography>
-
+                      <b>Company</b>
                     </TableCell>
 
                     <TableCell>
-
-                      <Chip
-                        label={tenant.plan}
-                        color={getPlanColor(tenant.plan)}
-                        size="small"
-                      />
-
+                      <b>Plan</b>
                     </TableCell>
 
                     <TableCell>
-
-                      <Chip
-                        label={tenant.status}
-                        color={getStatusColor(tenant.status)}
-                        size="small"
-                      />
-
+                      <b>Status</b>
                     </TableCell>
 
                     <TableCell>
-
-                      {tenant.userCount}
-
+                      <b>Users</b>
                     </TableCell>
 
                     <TableCell>
-
-                      {tenant.apiCallCount.toLocaleString()}
-
+                      <b>API Calls</b>
                     </TableCell>
 
                     <TableCell>
-
-                      {dayjs(tenant.createdAt).format("DD MMM YYYY")}
-
+                      <b>Created</b>
                     </TableCell>
 
                     <TableCell align="center">
-
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() =>
-                          navigate(`/superadmin/company/${tenant.id}`)
-                        }
-                      >
-                        Manage
-                      </Button>
-
+                      <b>Actions</b>
                     </TableCell>
 
                   </TableRow>
 
-                ))}
+                </TableHead>
 
-              </TableBody>
+                <TableBody>
 
-            </Table>
+                  {tenants.map((tenant) => (
 
-          </TableContainer>
+                    <TableRow
+                      hover
+                      key={tenant.id}
+                    >
 
-        )}
+                      <TableCell>
 
-      </Paper>
+                        <Typography fontWeight={600}>
+                          {tenant.name}
+                        </Typography>
+
+                      </TableCell>
+
+                      <TableCell>
+
+                        <Chip
+                          label={tenant.plan}
+                          color={getPlanColor(tenant.plan)}
+                          size="small"
+                        />
+
+                      </TableCell>
+
+                      <TableCell>
+
+                        <Chip
+                          label={tenant.status}
+                          color={getStatusColor(tenant.status)}
+                          size="small"
+                        />
+
+                      </TableCell>
+
+                      <TableCell>
+
+                        {tenant.userCount}
+
+                      </TableCell>
+
+                      <TableCell>
+
+                        {tenant.apiCallCount.toLocaleString()}
+
+                      </TableCell>
+
+                      <TableCell>
+
+                        {dayjs(tenant.createdAt).format("DD MMM YYYY")}
+
+                      </TableCell>
+
+                      <TableCell align="center">
+
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() =>
+                            navigate(`/superadmin/company/${tenant.id}`)
+                          }
+                        >
+                          Manage
+                        </Button>
+
+                      </TableCell>
+
+                    </TableRow>
+
+                  ))}
+
+                </TableBody>
+
+              </Table>
+
+            </TableContainer>
+
+          )}
+
+        </Paper>
+
+      </Box>
 
     </Box>
 
