@@ -2,6 +2,7 @@ package com.saas.saas_boilerplate.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,16 +20,32 @@ public class Tenant {
     @Column(nullable = false, unique = true)
     private String name;
 
+    // Subscription Plan
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Builder.Default 
+    @Builder.Default
     private Plan plan = Plan.FREE;
 
+    // Tenant Status
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private Status status = Status.ACTIVE;
+
     @Column(name = "created_at")
-    @Builder.Default 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum Plan {
-        FREE, BASIC, PRO
+        FREE,
+        BASIC,
+        PRO,
+        ENTERPRISE
+    }
+
+    public enum Status {
+        ACTIVE,
+        SUSPENDED,
+        TRIAL
     }
 }
