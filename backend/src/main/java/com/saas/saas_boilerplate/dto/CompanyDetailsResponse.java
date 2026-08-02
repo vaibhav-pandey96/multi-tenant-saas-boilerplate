@@ -9,21 +9,21 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class TenantSummaryResponse {
+@AllArgsConstructor
+public class CompanyDetailsResponse {
 
     private Long id;
 
-    // Company Information
     private String name;
+
     private String plan;
+
     private String status;
 
-    // Statistics
-    private Long userCount;
-    private Long apiCallCount;
-
-    // Metadata
     private LocalDateTime createdAt;
+
+    private Long userCount;
+
+    private Long apiCallCount;
 }

@@ -1,5 +1,6 @@
 package com.saas.saas_boilerplate.Controller;
 
+import com.saas.saas_boilerplate.dto.CompanyDetailsResponse;
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
 import com.saas.saas_boilerplate.model.Tenant;
 import com.saas.saas_boilerplate.repository.TenantRepository;
@@ -41,12 +42,24 @@ public class SuperAdminController {
     // SUPER ADMIN ONLY
     // ==========================================================
 
+    // Dashboard
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/tenants")
     public ResponseEntity<List<TenantSummaryResponse>> getAllTenants() {
 
         return ResponseEntity.ok(
                 adminService.getAllTenantsWithUsage()
+        );
+    }
+
+    // Company Details
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @GetMapping("/company/{id}")
+    public ResponseEntity<CompanyDetailsResponse> getCompanyDetails(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                adminService.getCompanyDetails(id)
         );
     }
 

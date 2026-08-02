@@ -30,6 +30,7 @@ public class BillingService {
     private static final BigDecimal FREE_PRICE = BigDecimal.ZERO;
     private static final BigDecimal BASIC_PRICE = new BigDecimal("29.00");
     private static final BigDecimal PRO_PRICE = new BigDecimal("99.00");
+    private static final BigDecimal ENTERPRISE_PRICE = new BigDecimal("299.00");
 
     // Mock overage price per API call once a tenant is on a paid plan
     private static final BigDecimal PRICE_PER_CALL = new BigDecimal("0.001");
@@ -199,6 +200,7 @@ public class BillingService {
             case FREE -> FREE_PRICE;
             case BASIC -> BASIC_PRICE;
             case PRO -> PRO_PRICE;
+            case ENTERPRISE -> ENTERPRISE_PRICE;
         };
     }
 

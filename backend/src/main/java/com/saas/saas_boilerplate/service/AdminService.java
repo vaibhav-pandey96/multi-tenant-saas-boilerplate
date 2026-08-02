@@ -1,5 +1,6 @@
 package com.saas.saas_boilerplate.service;
 
+import com.saas.saas_boilerplate.dto.CompanyDetailsResponse;
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
 import com.saas.saas_boilerplate.dto.UserProfileResponse;
 import com.saas.saas_boilerplate.model.Tenant;
@@ -22,6 +23,8 @@ public class AdminService {
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
     private final ApiUsageLogRepository apiUsageLogRepository;
+    
+    
 
     // Get currently logged-in user
     private User getCurrentUser() {
@@ -48,6 +51,7 @@ public class AdminService {
                 .plan(user.getTenant().getPlan().name())
                 .build();
     }
+   
 
     // ==================================================
     // TENANT ADMIN METHODS
@@ -193,6 +197,8 @@ public class AdminService {
                         .id(tenant.getId())
                         .name(tenant.getName())
                         .plan(tenant.getPlan().name())
+                        .status(tenant.getStatus().name())
+                        .createdAt(tenant.getCreatedAt())
                         .userCount(
                                 (long) userRepository.findByTenant(tenant).size()
                         )
@@ -201,5 +207,27 @@ public class AdminService {
                         )
                         .build())
                 .collect(Collectors.toList());
+    }
+    
+    @Transactional
+    public CompanyDetailsResponse getCompanyDetails(Long tenantId) {
+
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() ->
+                        new RuntimeException("Company not found."));
+
+        long userCount = userRepository.findByTenant(tenant).size();
+
+        long apiCallCount = apiUsageLogRepository.countByTenant(tenant);
+
+        return CompanyDetailsResponse.builder()
+                .id(tenant.getId())
+                .name(tenant.getName())
+                .plan(tenant.getPlan().name())
+                .status(tenant.getStatus().name())
+                .createdAt(tenant.getCreatedAt())
+                .userCount(userCount)
+                .apiCallCount(apiCallCount)
+                .build();
     }
 }

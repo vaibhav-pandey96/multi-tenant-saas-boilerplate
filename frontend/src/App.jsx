@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import AdminPanel from './pages/AdminPanel';
 import BillingPage from './pages/BillingPage.jsx';
 import SuperAdminPage from './pages/SuperAdminPage';
+import CompanyDetailsPage from "./pages/CompanyDetailsPage";
 
 function App() {
   return (
@@ -34,6 +35,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <BillingPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/superadmin/company/:id"
+            element={
+              <ProtectedRoute allowedRoles={["SUPER_ADMIN"]}>
+                <CompanyDetailsPage />
               </ProtectedRoute>
             }
           />
