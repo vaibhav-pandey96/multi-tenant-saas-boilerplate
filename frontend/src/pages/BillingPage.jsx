@@ -23,7 +23,7 @@ function BillingPage() {
   const [cardBrand, setCardBrand] = useState('');
 
   const isAdmin = user?.role === 'ADMIN' ||
-                  user?.role === 'SUPER_ADMIN';
+    user?.role === 'SUPER_ADMIN';
 
   useEffect(() => {
     fetchAll();
@@ -38,7 +38,7 @@ function BillingPage() {
         setSubscription(subRes.data);
       } catch (err) {
         setError('Could not load subscription. ' +
-                 (err.response?.data?.error || ''));
+          (err.response?.data?.error || ''));
       }
 
       try {
@@ -135,13 +135,13 @@ function BillingPage() {
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}
-                 onClose={() => setError('')}>
+            onClose={() => setError('')}>
             {error}
           </Alert>
         )}
         {message && (
           <Alert severity="success" sx={{ mb: 2 }}
-                 onClose={() => setMessage('')}>
+            onClose={() => setMessage('')}>
             {message}
           </Alert>
         )}
@@ -162,7 +162,7 @@ function BillingPage() {
                 <Chip
                   label={subscription?.status || 'ACTIVE'}
                   color={subscription?.status === 'ACTIVE'
-                         ? 'success' : 'error'}
+                    ? 'success' : 'error'}
                 />
                 {subscription?.cancelAtPeriodEnd && (
                   <Chip
@@ -176,15 +176,15 @@ function BillingPage() {
                 Period Start:{' '}
                 {subscription?.currentPeriodStart
                   ? new Date(subscription.currentPeriodStart)
-                      .toLocaleDateString()
+                    .toLocaleDateString()
                   : '-'}
               </Typography>
               <Typography variant="body2" color="text.secondary"
-                          mb={2}>
+                mb={2}>
                 Period End:{' '}
                 {subscription?.currentPeriodEnd
                   ? new Date(subscription.currentPeriodEnd)
-                      .toLocaleDateString()
+                    .toLocaleDateString()
                   : '-'}
               </Typography>
 
@@ -193,27 +193,36 @@ function BillingPage() {
                 <>
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="subtitle2"
-                              fontWeight="bold" mb={1}>
+                    fontWeight="bold" mb={1}>
                     Change Plan
                   </Typography>
                   <Box display="flex" gap={1}>
                     <FormControl size="small"
-                                 sx={{ minWidth: 140 }}>
+                      sx={{ minWidth: 140 }}>
                       <InputLabel>Select Plan</InputLabel>
                       <Select
                         value={selectedPlan}
                         label="Select Plan"
-                        onChange={(e) =>
-                          setSelectedPlan(e.target.value)}>
+                        onChange={(e) => setSelectedPlan(e.target.value)}
+                      >
+
                         <MenuItem value="FREE">
                           FREE — $0/mo
                         </MenuItem>
+
                         <MenuItem value="BASIC">
                           BASIC — $29/mo
                         </MenuItem>
+
                         <MenuItem value="PRO">
                           PRO — $99/mo
                         </MenuItem>
+
+                        <MenuItem value="ENTERPRISE"
+                        disabled>
+                          ENTERPRISE — Contact Sales
+                        </MenuItem>
+
                       </Select>
                     </FormControl>
                     <Button
@@ -257,7 +266,7 @@ function BillingPage() {
                       <b>****{paymentMethod.cardLastFour}</b>
                     </Typography>
                     <Typography variant="body2"
-                                color="text.secondary">
+                      color="text.secondary">
                       Added:{' '}
                       {new Date(paymentMethod.addedAt)
                         .toLocaleDateString()}
@@ -271,7 +280,7 @@ function BillingPage() {
 
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="subtitle2"
-                            fontWeight="bold" mb={1}>
+                  fontWeight="bold" mb={1}>
                   {paymentMethod ? 'Update Card' : 'Add Card'}
                 </Typography>
                 <TextField
@@ -311,7 +320,7 @@ function BillingPage() {
 
               {invoices.length === 0 ? (
                 <Typography color="text.secondary"
-                            textAlign="center" py={3}>
+                  textAlign="center" py={3}>
                   No invoices yet. They appear after each
                   billing cycle.
                 </Typography>
@@ -349,7 +358,7 @@ function BillingPage() {
                               label={inv.status}
                               size="small"
                               color={inv.status === 'PAID'
-                                     ? 'success' : 'warning'}
+                                ? 'success' : 'warning'}
                             />
                           </TableCell>
                         </TableRow>

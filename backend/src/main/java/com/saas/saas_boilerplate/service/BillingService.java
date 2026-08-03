@@ -52,23 +52,56 @@ public class BillingService {
 
     @Transactional
     public SubscriptionResponse changePlan(ChangePlanRequest request) {
+
         Tenant tenant = currentTenant();
 
         Tenant.Plan newPlan;
+
         try {
-            newPlan = Tenant.Plan.valueOf(request.getPlan().toUpperCase());
+
+            newPlan = Tenant.Plan.valueOf(
+                    request.getPlan().toUpperCase()
+            );
+
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid plan: " + request.getPlan());
+
+            throw new RuntimeException(
+                    "Invalid plan: " + request.getPlan()
+            );
+
         }
 
+        // Already subscribed to this plan
+        if (tenant.getPlan() == newPlan) {
+
+            throw new RuntimeException(
+                    "You are already subscribed to the " + newPlan + " plan."
+            );
+
+        }
+
+        // Enterprise plans can only be assigned by the Super Admin
+        if (newPlan == Tenant.Plan.ENTERPRISE) {
+
+            throw new RuntimeException(
+                    "Enterprise plans can only be assigned by the Super Admin."
+            );
+
+        }
+
+        // Update tenant plan
         tenant.setPlan(newPlan);
         tenantRepository.save(tenant);
 
-        Subscription subscription = subscriptionRepository.findByTenant(tenant)
+        // Get or create subscription
+        Subscription subscription = subscriptionRepository
+                .findByTenant(tenant)
                 .orElseGet(() -> createDefaultSubscription(tenant));
 
+        // Reactivate subscription if needed
         subscription.setStatus(Subscription.Status.ACTIVE);
         subscription.setCancelAtPeriodEnd(false);
+
         subscriptionRepository.save(subscription);
 
         return toResponse(subscription);
