@@ -52,25 +52,6 @@ public class BillingService {
 
     @Transactional
     public SubscriptionResponse changePlan(ChangePlanRequest request) {
-<<<<<<< HEAD
-        Tenant tenant = currentTenant();
-
-        Tenant.Plan newPlan;
-        try {
-            newPlan = Tenant.Plan.valueOf(request.getPlan().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid plan: " + request.getPlan());
-        }
-
-        tenant.setPlan(newPlan);
-        tenantRepository.save(tenant);
-
-        Subscription subscription = subscriptionRepository.findByTenant(tenant)
-                .orElseGet(() -> createDefaultSubscription(tenant));
-
-        subscription.setStatus(Subscription.Status.ACTIVE);
-        subscription.setCancelAtPeriodEnd(false);
-=======
 
         Tenant tenant = currentTenant();
 
@@ -121,7 +102,6 @@ public class BillingService {
         subscription.setStatus(Subscription.Status.ACTIVE);
         subscription.setCancelAtPeriodEnd(false);
 
->>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
         subscriptionRepository.save(subscription);
 
         return toResponse(subscription);

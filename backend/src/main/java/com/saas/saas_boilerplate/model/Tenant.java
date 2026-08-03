@@ -17,20 +17,9 @@ public class Tenant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-<<<<<<< HEAD
-    // Company Name
     @Column(nullable = false, unique = true)
     private String name;
 
-    // Tenant Domain
-    @Column(nullable = false, unique = true)
-    private String domain;
-
-=======
-    @Column(nullable = false, unique = true)
-    private String name;
-
->>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
     // Subscription Plan
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

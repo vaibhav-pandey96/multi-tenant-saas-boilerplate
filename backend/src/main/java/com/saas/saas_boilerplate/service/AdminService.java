@@ -1,9 +1,6 @@
 package com.saas.saas_boilerplate.service;
 
-<<<<<<< HEAD
-=======
 import com.saas.saas_boilerplate.dto.ChangeCompanyStatusRequest;
->>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 import com.saas.saas_boilerplate.dto.ChangePlanRequest;
 import com.saas.saas_boilerplate.dto.CompanyDetailsResponse;
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
@@ -11,12 +8,9 @@ import com.saas.saas_boilerplate.dto.UserProfileResponse;
 import com.saas.saas_boilerplate.model.Tenant;
 import com.saas.saas_boilerplate.model.User;
 import com.saas.saas_boilerplate.repository.ApiUsageLogRepository;
-<<<<<<< HEAD
-=======
 import com.saas.saas_boilerplate.repository.InvoiceRepository;
 import com.saas.saas_boilerplate.repository.PaymentMethodRepository;
 import com.saas.saas_boilerplate.repository.SubscriptionRepository;
->>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 import com.saas.saas_boilerplate.repository.TenantRepository;
 import com.saas.saas_boilerplate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +28,9 @@ public class AdminService {
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
     private final ApiUsageLogRepository apiUsageLogRepository;
-<<<<<<< HEAD
-=======
     private final InvoiceRepository invoiceRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PaymentMethodRepository paymentMethodRepository;
->>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
     
     
 
@@ -244,8 +235,6 @@ public class AdminService {
     }
     
     @Transactional
-<<<<<<< HEAD
-=======
     public void deleteCompany(Long tenantId) {
 
         Tenant tenant = tenantRepository.findById(tenantId)
@@ -282,7 +271,6 @@ public class AdminService {
     }
     
     @Transactional
->>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
     public CompanyDetailsResponse getCompanyDetails(Long tenantId) {
 
         Tenant tenant = tenantRepository.findById(tenantId)
@@ -330,8 +318,6 @@ public class AdminService {
 
         return toCompanyDetailsResponse(tenant);
     }
-<<<<<<< HEAD
-=======
     
     @Transactional
     public CompanyDetailsResponse changeCompanyStatus(
@@ -373,5 +359,4 @@ public class AdminService {
 
         return toCompanyDetailsResponse(tenant);
     }
->>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 }
