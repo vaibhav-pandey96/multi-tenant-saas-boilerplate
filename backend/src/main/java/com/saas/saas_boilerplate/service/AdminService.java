@@ -1,5 +1,9 @@
 package com.saas.saas_boilerplate.service;
 
+<<<<<<< HEAD
+=======
+import com.saas.saas_boilerplate.dto.ChangeCompanyStatusRequest;
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 import com.saas.saas_boilerplate.dto.ChangePlanRequest;
 import com.saas.saas_boilerplate.dto.CompanyDetailsResponse;
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
@@ -7,6 +11,12 @@ import com.saas.saas_boilerplate.dto.UserProfileResponse;
 import com.saas.saas_boilerplate.model.Tenant;
 import com.saas.saas_boilerplate.model.User;
 import com.saas.saas_boilerplate.repository.ApiUsageLogRepository;
+<<<<<<< HEAD
+=======
+import com.saas.saas_boilerplate.repository.InvoiceRepository;
+import com.saas.saas_boilerplate.repository.PaymentMethodRepository;
+import com.saas.saas_boilerplate.repository.SubscriptionRepository;
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 import com.saas.saas_boilerplate.repository.TenantRepository;
 import com.saas.saas_boilerplate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +34,12 @@ public class AdminService {
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
     private final ApiUsageLogRepository apiUsageLogRepository;
+<<<<<<< HEAD
+=======
+    private final InvoiceRepository invoiceRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
     
     
 
@@ -228,6 +244,45 @@ public class AdminService {
     }
     
     @Transactional
+<<<<<<< HEAD
+=======
+    public void deleteCompany(Long tenantId) {
+
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() ->
+                        new RuntimeException("Company not found."));
+
+        // Never allow deleting the Platform company
+        boolean containsSuperAdmin = !userRepository
+                .findByTenantAndRole(
+                        tenant,
+                        User.Role.SUPER_ADMIN
+                )
+                .isEmpty();
+
+        if (containsSuperAdmin) {
+            throw new RuntimeException(
+                    "The Platform company cannot be deleted."
+            );
+        }
+
+        // Delete child records first
+        apiUsageLogRepository.deleteByTenant(tenant);
+
+        invoiceRepository.deleteByTenant(tenant);
+
+        paymentMethodRepository.deleteByTenant(tenant);
+
+        subscriptionRepository.deleteByTenant(tenant);
+
+        userRepository.deleteByTenant(tenant);
+
+        // Finally delete tenant
+        tenantRepository.delete(tenant);
+    }
+    
+    @Transactional
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
     public CompanyDetailsResponse getCompanyDetails(Long tenantId) {
 
         Tenant tenant = tenantRepository.findById(tenantId)
@@ -275,4 +330,48 @@ public class AdminService {
 
         return toCompanyDetailsResponse(tenant);
     }
+<<<<<<< HEAD
+=======
+    
+    @Transactional
+    public CompanyDetailsResponse changeCompanyStatus(
+            Long tenantId,
+            ChangeCompanyStatusRequest request) {
+
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() ->
+                        new RuntimeException("Company not found."));
+
+        Tenant.Status newStatus;
+
+        try {
+
+            newStatus = Tenant.Status.valueOf(
+                    request.getStatus().toUpperCase()
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            throw new RuntimeException(
+                    "Invalid status: " + request.getStatus()
+            );
+
+        }
+
+        // Already in same status
+        if (tenant.getStatus() == newStatus) {
+
+            throw new RuntimeException(
+                    "Company is already " + newStatus + "."
+            );
+
+        }
+
+        tenant.setStatus(newStatus);
+
+        tenantRepository.save(tenant);
+
+        return toCompanyDetailsResponse(tenant);
+    }
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 }

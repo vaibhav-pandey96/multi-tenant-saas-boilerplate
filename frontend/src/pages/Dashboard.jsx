@@ -5,7 +5,10 @@ import {
 } from '@mui/material';
 import { Person, Business, Badge } from '@mui/icons-material';
 import Navbar from '../components/Navbar';
+<<<<<<< HEAD
 import TenantContentFeed from '../components/TenantContentFeed';
+=======
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -129,8 +132,11 @@ function Dashboard() {
           </Grid>
 
         </Grid>
+<<<<<<< HEAD
 
         <TenantContentFeed />
+=======
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
       </Box>
     </Box>
   );

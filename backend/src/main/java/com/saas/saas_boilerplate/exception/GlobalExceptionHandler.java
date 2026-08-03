@@ -27,6 +27,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
     }
+<<<<<<< HEAD
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(
@@ -39,4 +40,6 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(body);
     }
+=======
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 }

@@ -23,7 +23,11 @@ function BillingPage() {
   const [cardBrand, setCardBrand] = useState('');
 
   const isAdmin = user?.role === 'ADMIN' ||
+<<<<<<< HEAD
                   user?.role === 'SUPER_ADMIN';
+=======
+    user?.role === 'SUPER_ADMIN';
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 
   useEffect(() => {
     fetchAll();
@@ -38,7 +42,11 @@ function BillingPage() {
         setSubscription(subRes.data);
       } catch (err) {
         setError('Could not load subscription. ' +
+<<<<<<< HEAD
                  (err.response?.data?.error || ''));
+=======
+          (err.response?.data?.error || ''));
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
       }
 
       try {
@@ -135,13 +143,21 @@ function BillingPage() {
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}
+<<<<<<< HEAD
                  onClose={() => setError('')}>
+=======
+            onClose={() => setError('')}>
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
             {error}
           </Alert>
         )}
         {message && (
           <Alert severity="success" sx={{ mb: 2 }}
+<<<<<<< HEAD
                  onClose={() => setMessage('')}>
+=======
+            onClose={() => setMessage('')}>
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
             {message}
           </Alert>
         )}
@@ -162,7 +178,11 @@ function BillingPage() {
                 <Chip
                   label={subscription?.status || 'ACTIVE'}
                   color={subscription?.status === 'ACTIVE'
+<<<<<<< HEAD
                          ? 'success' : 'error'}
+=======
+                    ? 'success' : 'error'}
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                 />
                 {subscription?.cancelAtPeriodEnd && (
                   <Chip
@@ -176,6 +196,7 @@ function BillingPage() {
                 Period Start:{' '}
                 {subscription?.currentPeriodStart
                   ? new Date(subscription.currentPeriodStart)
+<<<<<<< HEAD
                       .toLocaleDateString()
                   : '-'}
               </Typography>
@@ -185,6 +206,17 @@ function BillingPage() {
                 {subscription?.currentPeriodEnd
                   ? new Date(subscription.currentPeriodEnd)
                       .toLocaleDateString()
+=======
+                    .toLocaleDateString()
+                  : '-'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary"
+                mb={2}>
+                Period End:{' '}
+                {subscription?.currentPeriodEnd
+                  ? new Date(subscription.currentPeriodEnd)
+                    .toLocaleDateString()
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                   : '-'}
               </Typography>
 
@@ -193,16 +225,25 @@ function BillingPage() {
                 <>
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="subtitle2"
+<<<<<<< HEAD
                               fontWeight="bold" mb={1}>
+=======
+                    fontWeight="bold" mb={1}>
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                     Change Plan
                   </Typography>
                   <Box display="flex" gap={1}>
                     <FormControl size="small"
+<<<<<<< HEAD
                                  sx={{ minWidth: 140 }}>
+=======
+                      sx={{ minWidth: 140 }}>
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                       <InputLabel>Select Plan</InputLabel>
                       <Select
                         value={selectedPlan}
                         label="Select Plan"
+<<<<<<< HEAD
                         onChange={(e) =>
                           setSelectedPlan(e.target.value)}>
                         <MenuItem value="FREE">
@@ -214,6 +255,28 @@ function BillingPage() {
                         <MenuItem value="PRO">
                           PRO — $99/mo
                         </MenuItem>
+=======
+                        onChange={(e) => setSelectedPlan(e.target.value)}
+                      >
+
+                        <MenuItem value="FREE">
+                          FREE — $0/mo
+                        </MenuItem>
+
+                        <MenuItem value="BASIC">
+                          BASIC — $29/mo
+                        </MenuItem>
+
+                        <MenuItem value="PRO">
+                          PRO — $99/mo
+                        </MenuItem>
+
+                        <MenuItem value="ENTERPRISE"
+                        disabled>
+                          ENTERPRISE — Contact Sales
+                        </MenuItem>
+
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                       </Select>
                     </FormControl>
                     <Button
@@ -257,7 +320,11 @@ function BillingPage() {
                       <b>****{paymentMethod.cardLastFour}</b>
                     </Typography>
                     <Typography variant="body2"
+<<<<<<< HEAD
                                 color="text.secondary">
+=======
+                      color="text.secondary">
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                       Added:{' '}
                       {new Date(paymentMethod.addedAt)
                         .toLocaleDateString()}
@@ -271,7 +338,11 @@ function BillingPage() {
 
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="subtitle2"
+<<<<<<< HEAD
                             fontWeight="bold" mb={1}>
+=======
+                  fontWeight="bold" mb={1}>
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                   {paymentMethod ? 'Update Card' : 'Add Card'}
                 </Typography>
                 <TextField
@@ -311,7 +382,11 @@ function BillingPage() {
 
               {invoices.length === 0 ? (
                 <Typography color="text.secondary"
+<<<<<<< HEAD
                             textAlign="center" py={3}>
+=======
+                  textAlign="center" py={3}>
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                   No invoices yet. They appear after each
                   billing cycle.
                 </Typography>
@@ -349,7 +424,11 @@ function BillingPage() {
                               label={inv.status}
                               size="small"
                               color={inv.status === 'PAID'
+<<<<<<< HEAD
                                      ? 'success' : 'warning'}
+=======
+                                ? 'success' : 'warning'}
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
                             />
                           </TableCell>
                         </TableRow>

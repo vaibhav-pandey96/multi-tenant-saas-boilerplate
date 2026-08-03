@@ -23,4 +23,10 @@ public interface ApiUsageLogRepository extends JpaRepository<ApiUsageLog, Long> 
     // Delete all logs belonging to a user
     @Transactional
     void deleteByUser(User user);
+<<<<<<< HEAD
+=======
+    
+    @Transactional
+    void deleteByTenant(Tenant tenant);
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 }

@@ -1,5 +1,9 @@
 package com.saas.saas_boilerplate.Controller;
 
+<<<<<<< HEAD
+=======
+import com.saas.saas_boilerplate.dto.ChangeCompanyStatusRequest;
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 import com.saas.saas_boilerplate.dto.ChangePlanRequest;
 import com.saas.saas_boilerplate.dto.CompanyDetailsResponse;
 import com.saas.saas_boilerplate.dto.TenantSummaryResponse;
@@ -75,5 +79,31 @@ public class SuperAdminController {
                 adminService.changeCompanyPlan(id, request)
         );
     }
+<<<<<<< HEAD
+=======
+    
+ // Change Company Status
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping("/company/{id}/status")
+    public ResponseEntity<CompanyDetailsResponse> changeCompanyStatus(
+            @PathVariable Long id,
+            @RequestBody ChangeCompanyStatusRequest request) {
+
+        return ResponseEntity.ok(
+                adminService.changeCompanyStatus(id, request)
+        );
+    }
+    
+ // Delete Company
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @DeleteMapping("/company/{id}")
+    public ResponseEntity<String> deleteCompany(
+            @PathVariable Long id) {
+
+        adminService.deleteCompany(id);
+
+        return ResponseEntity.ok("Company deleted successfully.");
+    }
+>>>>>>> 928b97b65af459d38d56d50e693e3d7afcacc135
 
 }
