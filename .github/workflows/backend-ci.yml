@@ -30,12 +30,15 @@ jobs:
           --health-retries=10
 
     env:
+      # Database configuration
       DB_URL: jdbc:mysql://127.0.0.1:3306/saas_boilerplate
       DB_USERNAME: root
       DB_PASSWORD: root
 
+      # JWT configuration
       JWT_SECRET: ci-only-secret-key-at-least-32-characters-long
 
+      # Email configuration (dummy credentials for CI)
       MAIL_USERNAME: ci@example.com
       MAIL_PASSWORD: ci-placeholder-password
 
