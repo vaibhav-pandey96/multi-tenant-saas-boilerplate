@@ -6,7 +6,6 @@ on:
     branches:
       - main
       - master
-
   pull_request:
     branches:
       - main
@@ -16,7 +15,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    # Start a temporary MySQL database
     services:
       mysql:
         image: mysql:8.0
@@ -31,28 +29,32 @@ jobs:
           --health-timeout=5s
           --health-retries=10
 
-    # Database environment variables
     env:
       DB_URL: jdbc:mysql://127.0.0.1:3306/saas_boilerplate
       DB_USERNAME: root
       DB_PASSWORD: root
 
+      JWT_SECRET: ci-only-secret-key-at-least-32-characters-long
+
+      MAIL_USERNAME: ci@example.com
+      MAIL_PASSWORD: ci-placeholder-password
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v5
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: '17'
-          distribution: 'temurin'
           cache: maven
           cache-dependency-path: backend/pom.xml
 
       - name: Make Maven wrapper executable
         working-directory: backend
-        run: chmod +x ./mvnw
+        run: chmod +x mvnw
 
-      - name: Build and run tests
+      - name: Build and test backend
         working-directory: backend
         run: ./mvnw -B clean verify
