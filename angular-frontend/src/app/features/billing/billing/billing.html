@@ -1,0 +1,120 @@
+
+<div class="billing-container">
+
+  <header class="billing-header">
+    <h1>Billing & Subscription</h1>
+    <p>Manage your subscription and view your billing history.</p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-message">
+      Loading billing information...
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="error-alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  @if (!isLoading() && subscription(); as currentSubscription) {
+
+    <section class="billing-section">
+
+      <h2>Current Subscription</h2>
+
+      <div class="subscription-card">
+
+        <div class="subscription-top">
+          <div>
+            <span class="label">Current Plan</span>
+            <h3>{{ currentSubscription.plan }}</h3>
+          </div>
+
+          <span class="status-badge">
+            {{ currentSubscription.status }}
+          </span>
+        </div>
+
+        <div class="subscription-details">
+
+          <div>
+            <strong>Billing Cycle</strong>
+            <p>{{ currentSubscription.billingCycle }}</p>
+          </div>
+
+          <div>
+            <strong>Period Start</strong>
+            <p>{{ currentSubscription.currentPeriodStart | date:'dd MMM yyyy, hh:mm a' }}</p>
+          </div>
+
+          <div>
+            <strong>Period End</strong>
+            <p>{{ currentSubscription.currentPeriodEnd | date:'dd MMM yyyy, hh:mm a' }}</p>
+          </div>
+
+          <div>
+            <strong>Cancellation</strong>
+            <p>
+              {{ currentSubscription.cancelAtPeriodEnd ? 'Scheduled' : 'Not scheduled' }}
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  }
+
+  <section class="billing-section">
+
+    <h2>Invoice History</h2>
+
+    @if (invoices().length > 0) {
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Invoice ID</th>
+              <th>Base Amount</th>
+              <th>Usage Amount</th>
+              <th>Total Amount</th>
+              <th>API Calls</th>
+              <th>Status</th>
+              <th>Issued At</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (invoice of invoices(); track invoice.id) {
+              <tr>
+                <td>{{ invoice.id }}</td>
+                <td>{{ invoice.baseAmount }}</td>
+                <td>{{ invoice.usageAmount }}</td>
+                <td>{{ invoice.totalAmount }}</td>
+                <td>{{ invoice.apiCallCount }}</td>
+                <td>{{ invoice.status }}</td>
+                <td>{{ invoice.issuedAt }}</td>
+              </tr>
+            }
+          </tbody>
+
+        </table>
+
+      </div>
+
+    } @else if (!isLoading()) {
+
+      <p class="empty-message">No invoices found.</p>
+
+    }
+
+  </section>
+
+</div>

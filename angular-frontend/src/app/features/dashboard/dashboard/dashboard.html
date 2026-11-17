@@ -1,0 +1,104 @@
+
+<div class="dashboard-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+
+    <div class="sidebar-brand">
+      <h2>SaaS Portal</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <a routerLink="/dashboard" routerLinkActive="active">
+        Dashboard
+      </a>
+
+      <a routerLink="/billing" routerLinkActive="active">
+        Billing
+      </a>
+
+      <a routerLink="/admin" routerLinkActive="active">
+        Admin
+      </a>
+
+      <a routerLink="/superadmin" routerLinkActive="active">
+        Super Admin
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <button type="button">Logout</button>
+    </div>
+
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <header class="dashboard-header">
+
+  <h1>Dashboard</h1>
+
+  @if (user(); as currentUser) {
+    <p>Welcome back, {{ currentUser.name }}!</p>
+  }
+
+</header>
+
+@if (user(); as currentUser) {
+  <section class="user-profile">
+
+    <h2>Your Profile</h2>
+
+    <div class="profile-details">
+
+      <div>
+        <strong>Name</strong>
+        <p>{{ currentUser.name }}</p>
+      </div>
+
+      <div>
+        <strong>Email</strong>
+        <p>{{ currentUser.email }}</p>
+      </div>
+
+      <div>
+        <strong>Role</strong>
+        <p>{{ currentUser.role }}</p>
+      </div>
+
+      <div>
+        <strong>Company</strong>
+        <p>{{ currentUser.companyName || 'Not assigned' }}</p>
+      </div>
+
+    </div>
+
+  </section>
+}
+
+    <!-- Dashboard Cards -->
+    <section class="dashboard-cards">
+
+      <div class="dashboard-card">
+        <h3>Account</h3>
+        <p>Manage your account information.</p>
+      </div>
+
+      <div class="dashboard-card">
+        <h3>Billing</h3>
+        <p>View your subscription and billing details.</p>
+      </div>
+
+      <div class="dashboard-card">
+        <h3>Company</h3>
+        <p>View your company information.</p>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>

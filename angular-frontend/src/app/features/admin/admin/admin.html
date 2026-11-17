@@ -1,0 +1,85 @@
+
+<div class="admin-container">
+
+  <header class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <p>Manage users belonging to your company.</p>
+  </header>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="info-message">
+      Loading company users...
+    </div>
+  }
+
+  <!-- Error -->
+  @if (errorMessage()) {
+    <div class="error-alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Users Table -->
+  @if (!isLoading() && !errorMessage()) {
+
+    <section class="users-section">
+
+      <div class="section-header">
+        <div>
+          <h2>Company Users</h2>
+          <p>Total users: {{ users().length }}</p>
+        </div>
+      </div>
+
+      @if (users().length > 0) {
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Company</th>
+                <th>Plan</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (user of users(); track user.id) {
+                <tr>
+                  <td>{{ user.id }}</td>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <span class="role-badge">
+                      {{ user.role }}
+                    </span>
+                  </td>
+                  <td>{{ user.companyName }}</td>
+                  <td>{{ user.plan }}</td>
+                </tr>
+              }
+            </tbody>
+
+          </table>
+
+        </div>
+
+      } @else {
+
+        <div class="info-message">
+          No users found for your company.
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+</div>

@@ -1,0 +1,75 @@
+
+<div class="super-admin-container">
+
+  <div class="page-header">
+    <h1>Super Admin Dashboard</h1>
+    <p>Manage and monitor all registered companies.</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="info-message">
+      Loading companies...
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="error-alert">
+      {{ errorMessage() }}
+      <button (click)="loadTenants()">Try Again</button>
+    </div>
+  }
+
+  @if (!isLoading() && !errorMessage()) {
+    <div class="companies-section">
+
+      <div class="section-header">
+        <div>
+          <h2>Registered Companies</h2>
+          <p>Total companies: {{ tenants().length }}</p>
+        </div>
+      </div>
+
+      @if (tenants().length > 0) {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Company Name</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Users</th>
+                <th>API Calls</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (tenant of tenants(); track tenant.id) {
+                <tr>
+                  <td>{{ tenant.id }}</td>
+                  <td>{{ tenant.name }}</td>
+                  <td>{{ tenant.plan }}</td>
+                  <td>
+                    <span class="status-badge">
+                      {{ tenant.status }}
+                    </span>
+                  </td>
+                  <td>{{ tenant.userCount }}</td>
+                  <td>{{ tenant.apiCallCount }}</td>
+                  <td>{{ tenant.createdAt }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="info-message">
+          No companies found.
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

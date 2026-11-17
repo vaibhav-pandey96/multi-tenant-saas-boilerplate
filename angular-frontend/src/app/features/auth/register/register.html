@@ -1,0 +1,109 @@
+<div class="register-container">
+    <div class="register-card">
+
+        <h1>Create an Account</h1>
+        <p class="subtitle">Join us and get started</p>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+            @if (errorMessage) {
+            <div class="error-alert">{{ errorMessage }}</div>
+            }
+
+            @if (successMessage) {
+            <div class="success-alert">{{ successMessage }}</div>
+            }
+
+            <!-- Full Name -->
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" formControlName="name" placeholder="Enter your full name" />
+            </div>
+
+            @if (registerForm.controls.name.touched &&
+            registerForm.controls.name.hasError('required')) {
+            <small class="field-error">Full name is required.</small>
+            }
+
+            <!-- Email -->
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" formControlName="email" placeholder="Enter your email" />
+            </div>
+
+            @if (registerForm.controls.email.touched &&
+            registerForm.controls.email.hasError('required')) {
+            <small class="field-error">Email is required.</small>
+            }
+
+            @if (registerForm.controls.email.touched &&
+            registerForm.controls.email.hasError('email')) {
+            <small class="field-error">Please enter a valid email address.</small>
+            }
+
+            <!-- Password -->
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" formControlName="password" placeholder="Enter your password" />
+            </div>
+
+            @if (registerForm.controls.password.touched &&
+            registerForm.controls.password.hasError('required')) {
+            <small class="field-error">Password is required.</small>
+            }
+
+            @if (registerForm.controls.password.touched &&
+            registerForm.controls.password.hasError('minlength')) {
+            <small class="field-error">Password must be at least 6 characters.</small>
+            }
+            <!-- Company Selection -->
+            <div class="form-group">
+                <label>Company</label>
+
+                <div class="company-options">
+                    <label>
+                        <input type="radio" name="companyType" [checked]="isNewCompany"
+                            (change)="isNewCompany = true" />
+                        Create New Company
+                    </label>
+
+                    <label>
+                        <input type="radio" name="companyType" [checked]="!isNewCompany"
+                            (change)="isNewCompany = false" />
+                        Join Existing Company
+                    </label>
+                </div>
+
+                @if (registerForm.controls.companyName.touched &&
+                registerForm.controls.companyName.hasError('required')) {
+                <small class="field-error">Company name is required.</small>
+                }
+
+                @if (isNewCompany) {
+                <input type="text" formControlName="companyName" placeholder="Enter your company name" />
+                } @else {
+                <select formControlName="companyName">
+                    <option value="">Select your company</option>
+
+                    @for (company of existingCompanies; track company) {
+                    <option [value]="company">
+                        {{ company }}
+                    </option>
+                    }
+                </select>
+                }
+            </div>
+
+            <button type="submit" [disabled]="isLoading">
+                {{ isLoading ? 'Registering...' : 'Register' }}
+            </button>
+
+        </form>
+
+        <p class="login-link">
+            Already have an account?
+            <a routerLink="/login">Login</a>
+        </p>
+
+    </div>
+</div>

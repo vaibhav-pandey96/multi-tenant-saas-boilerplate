@@ -1,0 +1,53 @@
+<div class="login-container">
+  <div class="login-card">
+
+    <h1>SaaS Boilerplate</h1>
+    <p class="subtitle">Sign in to your account</p>
+
+    @if (errorMessage) {
+    <div class="error-alert">
+      {{ errorMessage }}
+    </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="email">Email</label>
+
+        <input type="email" id="email" formControlName="email" placeholder="Enter your email" />
+
+        @if (loginForm.controls.email.touched &&
+        loginForm.controls.email.invalid) {
+        <small class="error">
+          Please enter a valid email address.
+        </small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+
+        <input type="password" id="password" formControlName="password" placeholder="Enter your password" />
+
+        @if (loginForm.controls.password.touched &&
+        loginForm.controls.password.invalid) {
+        <small class="error">
+          Password is required.
+        </small>
+        }
+      </div>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
+
+    </form>
+
+    <p class="register-link">
+      Don't have an account?
+      <a routerLink="/register">Register here</a>
+    </p>
+
+  </div>
+</div>
